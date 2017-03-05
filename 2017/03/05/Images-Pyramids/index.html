@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>image pyramids 图像金字塔 | Ghostish</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <meta name="keywords" content="Computer VisionImage Processing" />
+  
+  
+  
+  
+  <meta name="description" content="有些情况下，我们需要处理源自同一张图像的不同分辨率的图像集合。这些不同分辨率的图像组成的集合称为图像金字塔。
+
+图像金字塔的主要类型可分为低通和带通
+有两种常用图像金字塔：  
+
+Gaussian Pyramid （低通）
+Laplacian Pyramids （带通）
+
+之所以称为金字塔，是因为金字塔底部由大尺寸的原图组成，越往上层，尺寸越小，堆叠起来就是一个金字塔的形式：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Image Pyramids 图像金字塔">
+<meta property="og:url" content="http://Ghostish.github.io/2017/03/05/Images-Pyramids/index.html">
+<meta property="og:site_name" content="Ghostish">
+<meta property="og:description" content="有些情况下，我们需要处理源自同一张图像的不同分辨率的图像集合。这些不同分辨率的图像组成的集合称为图像金字塔。
+
+图像金字塔的主要类型可分为低通和带通
+有两种常用图像金字塔：  
+
+Gaussian Pyramid （低通）
+Laplacian Pyramids （带通）
+
+之所以称为金字塔，是因为金字塔底部由大尺寸的原图组成，越往上层，尺寸越小，堆叠起来就是一个金字塔的形式：">
+<meta property="og:image" content="http://Ghostish.github.io/./2dGaussian.png">
+<meta property="og:image" content="http://Ghostish.github.io/./L.png">
+<meta property="og:updated_time" content="2017-03-05T13:02:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Image Pyramids 图像金字塔">
+<meta name="twitter:description" content="有些情况下，我们需要处理源自同一张图像的不同分辨率的图像集合。这些不同分辨率的图像组成的集合称为图像金字塔。
+
+图像金字塔的主要类型可分为低通和带通
+有两种常用图像金字塔：  
+
+Gaussian Pyramid （低通）
+Laplacian Pyramids （带通）
+
+之所以称为金字塔，是因为金字塔底部由大尺寸的原图组成，越往上层，尺寸越小，堆叠起来就是一个金字塔的形式：">
+<meta name="twitter:image" content="http://Ghostish.github.io/./2dGaussian.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Ghostish" type="application/atom+xml">
+  
+  <link rel="icon" href="/css/images/avatar.jpg">
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+  <style type="text/css">
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/9749f0/00000000000000000001008f/27/l?subset_id=2&fvd=n5) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/90cf9f/000000000000000000010091/27/l?subset_id=2&fvd=n7) format("woff2");font-weight:500;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/8a5494/000000000000000000013365/27/l?subset_id=2&fvd=n4) format("woff2");font-weight:lighter;font-style:normal;}
+    @font-face{font-family:futura-pt;src:url(https://use.typekit.net/af/d337d8/000000000000000000010095/27/l?subset_id=2&fvd=i4) format("woff2");font-weight:400;font-style:italic;}</style>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <script src="/js/jquery-3.1.1.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.css" >
+
+  
+    <link rel="stylesheet" href="/css/dialog.css">
+  
+
+  
+    <link rel="stylesheet" href="/css/header-post.css" >
+  
+
+  
+
+</head>
+
+<body>
+  
+  <div id="container">
+    <div id="wrap">
+      
+        <header>
+
+    <div id="allheader" class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="navbar-inner">
+          
+          <div class="container"> 
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+
+            
+              <a class="brand" style="border-width: 0;">
+                <p>Ghostish</p>
+              </a>
+            
+            
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                
+                  <li> <a class="main-nav-link" href="/">Home</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/archives">Archives</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/categories">Categories</a> </li>
+                
+                  <li> <a class="main-nav-link" href="/tags">Tags</a> </li>
+                
+                  <li><div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="Type something..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: 'Posts',
+            PAGES: 'Pages',
+            CATEGORIES: 'Categories',
+            TAGS: 'Tags',
+            UNTITLED: '(Untitled)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div></li>
+            </div>
+          </div>
+                
+      </div>
+    </div>
+
+</header>
+
+
+
+      
+            
+      <div id="content" class="outer">
+        
+          <section id="main" style="float:none;"><article id="post-Images-Pyramids" style="width: 75%; float:left;" class="article article-type-post" itemscope itemprop="blogPost" >
+  <div id="articleInner" class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="thumb" class="article-title" itemprop="name">
+      Image Pyramids 图像金字塔
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-meta">
+      
+	<a href="/2017/03/05/Images-Pyramids/" class="article-date">
+	  <time datetime="2017-03-05T12:50:22.000Z" itemprop="datePublished">2017-03-05</time>
+	</a>
+
+      
+    </div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>有些情况下，我们需要处理源自同一张图像的不同分辨率的图像集合。这些不同分辨率的图像组成的集合称为<strong>图像金字塔</strong>。</p>
+</blockquote>
+<p>图像金字塔的主要类型可分为低通和带通</p>
+<p>有两种常用图像金字塔：  </p>
+<ol>
+<li>Gaussian Pyramid （低通）</li>
+<li>Laplacian Pyramids （带通）</li>
+</ol>
+<p>之所以称为金字塔，是因为金字塔底部由大尺寸的原图组成，越往上层，尺寸越小，堆叠起来就是一个金字塔的形式：</p>
+<a id="more"></a>
+<h2 id="金字塔的生成过程"><a href="#金字塔的生成过程" class="headerlink" title="金字塔的生成过程"></a>金字塔的生成过程</h2><ol>
+<li>低通金字塔：使用一个恰当的平滑filter对图像进行平滑处理，接着对平滑之后的图像进行下采样（subsampling），下采样因子通常为2.（分别对应各个坐标轴）。继续对得出的结果图像做相同的操作，重复这个步骤多次。每循环一次，会得出一副更小的、平滑程度更高的、分辨率更低的图像。<br>如果把原图放在最底部，之后每一次的生成图像都堆叠到上一次的结果之上，就形成了金字塔的形状</li>
+<li>带通金字塔：通过将金字塔中相邻两层图像做差得到。由于相邻两层图像尺寸不同，因此需要进行一些图像插值操作，已达到计算像素间差值的目的。<br>具体的，拉普拉斯金字塔（Laplacian Pyramids）中的每一层，是由高斯金字塔的对应层以及高一层（需要先插值放大）做差而成。</li>
+</ol>
+<h2 id="Scale-Space-尺度空间"><a href="#Scale-Space-尺度空间" class="headerlink" title="Scale Space 尺度空间"></a>Scale Space 尺度空间</h2><p>尺度空间： 将一幅图像表示为一系列的平滑图像，称为尺度空间表示，这些平滑图像可参数化表示为平滑核（用于抑制细尺度结构）的尺寸。<br>定义:<br>尺度空间的概念适用于有着任意数目变量的信号。而其在二维图像上的应用是最常见的。</p>
+<p>尺度空间的其中一个主要类型，就是线性（高斯）尺度空间。高斯尺度空间因其良好的性质而被广泛地应用。</p>
+<p>对于给定的一副二维图像 f(x,y)，他的线性（高斯）尺度空间表示是由一系列的派生信号L(x,y;t)所组成，其中L(x,y,;t)由f(x,y)与一个二维高斯核卷积而成，其中二维高斯核定义如下：</p>
+<p><img src="./2dGaussian.png" alt="2dGaussian">  </p>
+<p>因此有：<br><img src="./L.png" alt="Scale Function"> </p>
+<p>其中 * 号代表卷积。 分号表示卷机操作只对 x,y 这两个变量进行，t仅指代定义好的尺度级别（scale level）。上述L 适用于连续的尺度级别 t≥0， 但一般情况下仅会考虑离散的一组t </p>
+<p>尺度参数 t=σ^2 是高斯filter的方差。当t趋于零时，g就成为了一个脉冲函数（除了零点，别处的函数值都为零），则有 L(x,y;0)=f(x,y), 也就是说，位于尺度级别 t = 0 的尺度空间表示（scale-space representation）就是原图本身。随着t的增大，越来越大的filter被作用于图像f，形成平滑度越来越高的L，以至于原图中越来越多的细节被丢弃。由于每个filter的标准差为σ=√t,  对于位于尺度等级t的图像，远小于√t的细节很大程度上会被丢弃。</p>
+<h3 id="关于filter的选取"><a href="#关于filter的选取" class="headerlink" title="关于filter的选取"></a>关于filter的选取</h3><p>并非任何低通filter都可用于生成尺度空间。可用于生成尺度空间的filter必须满足以下一点：由该平滑filter生成的粗尺度图像（高层图像）不会引入不存在于细尺度图像（低层图像）中的杂散结构。换言之，给定粗尺度图像中的任何一个区域，细尺度图像上总能找到相应的区域。这两个区域相比，粗尺度图像区域不能够有新的结构。</p>
+<p>受制于尺度空间公理，高斯卷积核是实现尺度变换的唯一线性核。</p>
+<h2 id="为什么要提出尺度空间？"><a href="#为什么要提出尺度空间？" class="headerlink" title="为什么要提出尺度空间？"></a>为什么要提出尺度空间？</h2><p>在现实世界中，物体在不同尺度下，有着不同的结构。这就表明，我们如果从不同的尺度去观察同一个物体，会得出不一样的结果。比如，观察一棵树的适当尺度应该是“米”，而观察一片叶子可能需要更细粒度的尺度才能得出较好的结果。 当计算机系统要对一个未知的场景进行分析时，并不能够提前预知要用什么样的尺度来对图像信息中的兴趣结构（interesting structures）进行描述才是最合适的。因此，唯一可行的方案就是将多个不同尺度的描述都考虑进来，以便捕获未知的尺度变化。</p>
+<p>尺度空间理论和生物视觉之间也有着十分密切的联系。哺乳动物的视网膜以及视觉皮层第一阶段所记录的接受场的分布，与许多尺度空间操作都高度近似。</p>
+<p>参考链接：</p>
+<blockquote>
+<p><a href="https://en.wikipedia.org/wiki/Scale_space" target="_blank" rel="external">https://en.wikipedia.org/wiki/Scale_space</a><br><a href="http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html" target="_blank" rel="external">http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_pyramids/py_pyramids.html</a><br><a href="https://en.wikipedia.org/wiki/Pyramid_(image_processing" target="_blank" rel="external">https://en.wikipedia.org/wiki/Pyramid_(image_processing</a>)</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      
+        
+	<div id="comment">
+	
+	<!-- 多说评论框 start -->
+	 <div class="ds-thread" data-thread-key="/2017/03/05/Images-Pyramids/" data-title="Image Pyramids 图像金字塔" data-url="http://Ghostish.github.io/2017/03/05/Images-Pyramids/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"Ghostish"};
+	  (function() {
+	    var ds = document.createElement('script');
+	    ds.type = 'text/javascript';ds.async = true;
+	    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+	    ds.charset = 'UTF-8';
+	    (document.getElementsByTagName('head')[0] 
+	     || document.getElementsByTagName('body')[0]).appendChild(ds);
+	  })();
+	  </script>
+	<!-- 多说公共JS代码 end -->
+	
+	</div>
+
+
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Computer-Vision/">Computer Vision</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Image-Processing/">Image Processing</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/03/05/regular-expression-notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">python 3 正则表达式笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+<!-- Table of Contents -->
+
+  <aside id="sidebar">
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">Contents</strong>
+    
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#金字塔的生成过程"><span class="toc-number">1.</span> <span class="toc-text">金字塔的生成过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scale-Space-尺度空间"><span class="toc-number">2.</span> <span class="toc-text">Scale Space 尺度空间</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#关于filter的选取"><span class="toc-number">2.1.</span> <span class="toc-text">关于filter的选取</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么要提出尺度空间？"><span class="toc-number">3.</span> <span class="toc-text">为什么要提出尺度空间？</span></a></li></ol>
+    
+    </div>
+  </aside>
+</section>
+        
+      </div>
+      
+      <footer id="footer">
+  
+
+  <div class="container">
+      <div class="row">
+	      <p> Powered by <a href="http://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/iTimeTraveler/hexo-theme-hiker" target="_blank">Hexo-theme-hiker</a> </p>
+	      <p id="copyRightEn">Copyright &copy; 2013 - 2017 Ghostish All Rights Reserved.</p>
+	      <p id="copyRightCn">Kangel Zenn hold copyright</p>
+	</div>
+  </div>
+</footer>
+
+
+<!-- min height -->
+
+<script>
+    var wrapdiv = document.getElementById("wrap");
+    var contentdiv = document.getElementById("content");
+    var allheader = document.getElementById("allheader");
+
+    wrapdiv.style.minHeight = document.body.offsetHeight + "px";
+    if (allheader != null) {
+      contentdiv.style.minHeight = document.body.offsetHeight - allheader.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    } else {
+      contentdiv.style.minHeight = document.body.offsetHeight - document.getElementById("footer").offsetHeight + "px";
+    }
+</script>
+    </div>
+    <!-- <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+    <a href="/categories" class="mobile-nav-link">Categories</a>
+  
+    <a href="/tags" class="mobile-nav-link">Tags</a>
+  
+</nav> -->
+    
+<div style="display: none;">
+  <script src="https://s11.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+</div>
+
+<!-- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+  <script src="/js/dialog.js"></script>
+
+
+
+
+
+
+  </div>
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="myModalLabel">设置</h2>
+      </div>
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+
+
+      <div class="modal-body">
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="javascript:setFontSize();" aria-expanded="true" aria-controls="collapseOne">
+              正文字号大小
+            </a>
+          </div>
+          <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
+            您已调整页面字体大小
+          </div>
+        </div>
+      
+
+
+          <div style="margin:6px;">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" onclick="javascript:setBackground();" aria-expanded="true" aria-controls="collapseTwo">
+              夜间护眼模式
+            </a>
+        </div>
+          <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+          <div class="panel-body">
+            夜间模式已经开启，再次单击按钮即可关闭 
+          </div>
+        </div>
+
+        <div>
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关 于&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+        </div>
+         <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+          <div class="panel-body">
+            Ghostish
+          </div>
+          <div class="panel-body">
+            Copyright © 2017 Kangel Zenn All Rights Reserved.
+          </div>
+        </div>
+      </div>
+
+
+      <hr style="margin-top:0px; margin-bottom:0px; width:80%; border-top: 1px solid #000;">
+      <hr style="margin-top:2px; margin-bottom:0px; width:80%; border-top: 3px solid #000;">
+      <div class="modal-footer">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+  <a id="rocket" href="#top" class=""></a>
+  <script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+  
+
+	<div style="display: none;">
+    <script src="https://s95.cnzz.com/z_stat.php?id=1260716016&web_id=1260716016" language="JavaScript"></script>
+  </div>
+
+
+</body>
+</html>
